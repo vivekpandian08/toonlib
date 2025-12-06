@@ -3,9 +3,9 @@
 **Token-Oriented Object Notation (TOON) - Reduce LLM token usage by up to 55% with lossless data serialization**
 
 [![Python 3.8+](https://img.shields.io/badge/python-3.8+-blue.svg)](https://www.python.org/downloads/)
-[![Version](https://img.shields.io/badge/version-1.0.1-brightgreen.svg)](https://github.com/vivekpandian08/toonstream)
+[![Version](https://img.shields.io/badge/version-1.1.0-brightgreen.svg)](https://github.com/vivekpandian08/toonstream/releases/tag/v1.1.0)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Tests](https://img.shields.io/badge/tests-100%25-brightgreen.svg)](tests/)
+[![Tests](https://img.shields.io/badge/tests-130%2F130-brightgreen.svg)](tests/)
 
 ---
 
@@ -113,7 +113,7 @@ data = {
     ]
 }
 
-# Encode to TOON format
+# Encode to TOON format (normal mode - default)
 toon_str = encode(data)
 print(toon_str)
 # Output:
@@ -127,6 +127,29 @@ decoded = decode(toon_str)
 assert decoded == data  # ✓ Perfect round-trip!
 ```
 
+### Smart Mode Selection with `auto_mode`
+
+**New in v1.1.0:** Single parameter for intelligent mode detection
+
+```python
+# Auto mode - automatically detects tensor data
+toon_str = encode(data, auto_mode=True)
+decoded = decode(toon_str, auto_mode=True)
+
+# With PyTorch tensors (auto_mode detects and preserves them)
+import torch
+data_with_tensors = {
+    'embeddings': torch.randn(10, 768),
+    'labels': [0, 1, 0],
+    'metadata': {'model': 'bert-base'}
+}
+
+# auto_mode automatically handles tensor serialization
+encoded = encode(data_with_tensors, auto_mode=True)
+decoded = decode(encoded, auto_mode=True)
+# ✓ Tensors preserved with metadata (dtype, device, shape)
+```
+
 ### Advanced Options
 
 ```python
@@ -138,6 +161,12 @@ always_tabular = encode(data, smart_optimize=False)
 
 # Pretty print with indentation
 pretty = encode(data, indent=2)
+
+# Sort dictionary keys
+sorted_output = encode(data, sort_keys=True)
+
+# Combine with auto_mode
+combined = encode(data, auto_mode=True, compact=True)
 ```
 
 ---
@@ -311,12 +340,13 @@ with open('config.toon') as f:
 
 ### Core Functions
 
-#### `encode(obj, compact=False, smart_optimize=True, indent=None, sort_keys=False)`
+#### `encode(obj, auto_mode=False, compact=False, smart_optimize=True, indent=None, sort_keys=False)`
 
 Convert Python object to TOON format.
 
 **Parameters:**
 - `obj` (Any): Python object (dict, list, primitive)
+- `auto_mode` (bool): Auto-detect mode (tensor vs normal). **New in v1.1.0!** (default: False)
 - `compact` (bool): Minimize whitespace (default: False)
 - `smart_optimize` (bool): Auto-detect best format (default: True)
 - `indent` (int): Indentation spaces, None for compact (default: None)
@@ -327,8 +357,11 @@ Convert Python object to TOON format.
 **Raises:** `ToonEncodeError` - If encoding fails
 
 ```python
-# Basic encoding
+# Basic encoding (normal mode)
 toon = encode(data)
+
+# Auto mode - automatically detects and handles tensors
+toon = encode(data, auto_mode=True)
 
 # Compact output
 toon = encode(data, compact=True)
@@ -341,14 +374,18 @@ toon = encode(data, smart_optimize=False)
 
 # Pretty print with 2-space indent
 toon = encode(data, indent=2)
+
+# Combine parameters
+toon = encode(data, auto_mode=True, compact=True, sort_keys=True)
 ```
 
-#### `decode(toon_str, strict=True)`
+#### `decode(toon_str, auto_mode=False, strict=True)`
 
 Convert TOON format to Python object.
 
 **Parameters:**
 - `toon_str` (str): TOON formatted string
+- `auto_mode` (bool): Auto-detect mode for decoding. **New in v1.1.0!** (default: False)
 - `strict` (bool): Enforce strict validation (default: True)
 
 **Returns:** `Any` - Python object
@@ -356,11 +393,17 @@ Convert TOON format to Python object.
 **Raises:** `ToonDecodeError` - If decoding fails
 
 ```python
-# Decode TOON string
+# Decode TOON string (normal mode)
 data = decode(toon_str)
+
+# Auto mode - automatically detects and reconstructs tensors
+data = decode(toon_str, auto_mode=True)
 
 # Lenient mode (allows minor format issues)
 data = decode(toon_str, strict=False)
+
+# Combine parameters
+data = decode(toon_str, auto_mode=True, strict=True)
 ```
 
 ### Pickle Functions
@@ -407,7 +450,7 @@ data = load_toon_pickle('data.toon.pkl')
 
 ---
 
-## 🧪 Development
+## 🧪 Development & Testing
 
 ### Running Tests
 
@@ -415,8 +458,11 @@ data = load_toon_pickle('data.toon.pkl')
 # Install dev dependencies
 pip install -e ".[dev]"
 
-# Run all tests
-pytest tests/test_toonstream.py -v
+# Run all tests (130 tests, all passing)
+pytest tests/ -v
+
+# Run specific test file
+pytest tests/test_both_modes.py -v
 
 # Run with coverage
 pytest tests/ --cov=toonstream --cov-report=html
@@ -438,29 +484,39 @@ python benchmarks/run_all_comparisons.py
 
 ```
 toonstream/
-├── toonstream/           # Core library
-│   ├── __init__.py       # Public API exports
-│   ├── encoder.py        # TOON encoder (485 lines)
-│   ├── decoder.py        # TOON decoder (533 lines)
-│   ├── exceptions.py     # Exception hierarchy (60 lines)
-│   └── pickle_utils.py   # Pickle integration (177 lines)
-├── benchmarks/           # Performance tests
+├── toonstream/               # Core library
+│   ├── __init__.py           # Public API exports
+│   ├── encoder.py            # TOON encoder
+│   ├── decoder.py            # TOON decoder
+│   ├── tensor_utils.py       # PyTorch tensor support
+│   ├── pickle_utils.py       # Pickle integration
+│   ├── exceptions.py         # Exception hierarchy
+│   └── unified_api.py        # Unified encode/decode with auto_mode (NEW v1.1.0)
+├── benchmarks/               # Performance benchmarks
 │   ├── run_all_comparisons.py
 │   └── config.json
-├── tests/                # Test suite (51 tests, 100% passing)
-│   └── test_toonstream.py
-├── examples/             # Usage examples
-│   ├── basic_example.py
-│   ├── advanced_example.py
-│   ├── pickle_example.py
-│   └── toonstream_tutorial.ipynb
-├── data/                 # Benchmark datasets
-├── results/              # Benchmark results
-├── README.md             # This file
-├── PICKLE_USAGE.md       # Pickle utilities guide
-├── pyproject.toml        # Modern package configuration
-├── setup.py              # Package configuration
-└── requirements.txt      # Dependencies
+├── tests/                    # Test suite (130 tests, 100% passing)
+│   ├── test_toonstream.py    # Core functionality (51 tests)
+│   ├── test_auto_mode_api.py # Auto mode parameter (19 tests)
+│   ├── test_both_modes.py    # Comparison tests (41 tests) - NEW v1.1.0
+│   └── test_tensor_utils.py  # Tensor support (19 tests)
+├── examples/                 # Usage examples
+│   ├── basic_example.py      # Simple encoding/decoding
+│   ├── auto_mode_example.py  # Auto mode usage (NEW v1.1.0)
+│   ├── tensor_example.py     # PyTorch integration
+│   └── README.md
+├── .github/workflows/        # CI/CD workflows (NEW v1.1.0)
+│   ├── tests.yml             # Automated testing
+│   ├── publish.yml           # Release & PyPI publishing
+│   └── release-checklist.yml # Pre-release validation
+├── data/                     # Benchmark datasets
+├── results/                  # Benchmark results
+├── README.md                 # This file
+├── RELEASE_NOTES_v1.1.0.md   # What's new in v1.1.0 (NEW)
+├── PICKLE_USAGE.md           # Pickle utilities guide
+├── pyproject.toml            # Modern package configuration
+├── setup.py                  # Package configuration
+└── requirements.txt          # Dependencies
 ```
 
 ---
@@ -470,17 +526,29 @@ toonstream/
 See the `examples/` directory for complete examples:
 
 - **basic_example.py** - Getting started guide
-- **advanced_example.py** - Smart optimization features
-- **pickle_example.py** - Pickle integration demo
-- **toonstream_tutorial.ipynb** - Interactive Jupyter notebook tutorial
+- **auto_mode_example.py** - Using auto_mode parameter **(NEW in v1.1.0)**
+- **tensor_example.py** - PyTorch tensor integration
+- **README.md** - Examples documentation
 
 Run them:
 
 ```bash
 python examples/basic_example.py
-python examples/advanced_example.py
-python examples/pickle_example.py
+python examples/auto_mode_example.py
+python examples/tensor_example.py  # Requires PyTorch
 ```
+
+### What's New in v1.1.0?
+
+**Key improvements:**
+- ✅ Single `auto_mode` parameter (simpler API)
+- ✅ 41 new comprehensive tests
+- ✅ 130 total tests, all passing
+- ✅ Automatic tensor mode detection
+- ✅ Enhanced CI/CD workflows
+- ✅ Full backward compatibility
+
+See [RELEASE_NOTES_v1.1.0.md](RELEASE_NOTES_v1.1.0.md) for full details.
 
 ---
 

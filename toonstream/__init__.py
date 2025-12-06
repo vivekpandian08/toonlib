@@ -46,8 +46,8 @@ Modules:
 For more information, see README.md and OPTIMIZATION_GUIDE.md
 """
 
-from .encoder import ToonEncoder, encode
-from .decoder import ToonDecoder, decode
+from .encoder import ToonEncoder, encode as _normal_encode
+from .decoder import ToonDecoder, decode as _normal_decode
 from .exceptions import (
     ToonError,
     ToonEncodeError,
@@ -62,17 +62,49 @@ from .pickle_utils import (
     ToonPickleError
 )
 
-__version__ = "1.0.1"
+# Optional tensor support (requires PyTorch)
+try:
+    from .tensor_utils import (
+        encode_with_tensors,
+        decode_with_tensors,
+        TensorEncoder,
+        TensorDecoder,
+        is_torch_available
+    )
+    _TENSOR_SUPPORT = True
+except ImportError:
+    _TENSOR_SUPPORT = False
+    encode_with_tensors = None
+    decode_with_tensors = None
+    TensorEncoder = None
+    TensorDecoder = None
+    is_torch_available = lambda: False
+
+# Unified API for mode selection
+try:
+    from .unified_api import encode, decode
+except ImportError:
+    encode = None
+    decode = None
+
+__version__ = "1.1.0"
 __all__ = [
     # Convenience functions (recommended API)
-    "encode",
-    "decode",
+    "encode",  # Now supports use_tensors and auto_tensors parameters
+    "decode",  # Now supports use_tensors and auto_tensors parameters
     
     # Pickle utilities
     "save_toon_pickle",
     "load_toon_pickle",
     "save_pickle",
     "load_pickle",
+    
+    # Tensor utilities (optional)
+    "encode_with_tensors",
+    "decode_with_tensors",
+    "TensorEncoder",
+    "TensorDecoder",
+    "is_torch_available",
     
     # Classes for advanced usage
     "ToonEncoder",
