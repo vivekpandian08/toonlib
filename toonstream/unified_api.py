@@ -33,7 +33,6 @@ from .tron_encoder import encode_tron
 # Try to import tensor utilities
 try:
     from .tensor_utils import decode_with_tensors, encode_with_tensors, is_torch_available
-
     _TENSOR_SUPPORT = True
 except ImportError:
     _TENSOR_SUPPORT = False
