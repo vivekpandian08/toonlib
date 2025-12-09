@@ -1,0 +1,261 @@
+B007 Loop control variable `name` not used within loop body
+   --> benchmarks\token_counters.py:150:13
+    |
+148 |             ("tiktoken", lambda: _try_tiktoken()),
+149 |         ]
+150 |         for name, fn in attempts:
+    |             ^^^^
+151 |             result = fn()
+152 |             if result:
+    |
+help: Rename unused `name` to `_name`
+
+F401 `tiktoken` imported but unused; consider using `importlib.util.find_spec` to test for availability
+   --> benchmarks\token_counters.py:214:16
+    |
+212 |     # Check tiktoken
+213 |     try:
+214 |         import tiktoken
+    |                ^^^^^^^^
+215 |
+216 |         available["tiktoken (GPT-4/3.5)"] = True
+    |
+help: Remove unused import: `tiktoken`
+
+F401 `transformers` imported but unused; consider using `importlib.util.find_spec` to test for availability
+   --> benchmarks\token_counters.py:222:16
+    |
+220 |     # Check transformers
+221 |     try:
+222 |         import transformers
+    |                ^^^^^^^^^^^^
+223 |
+224 |         available["transformers"] = True
+    |
+help: Remove unused import: `transformers`
+
+F401 `sentencepiece` imported but unused; consider using `importlib.util.find_spec` to test for availability
+   --> benchmarks\token_counters.py:241:16
+    |
+239 |     # Check sentencepiece
+240 |     try:
+241 |         import sentencepiece
+    |                ^^^^^^^^^^^^^
+242 |
+243 |         available["sentencepiece"] = True
+    |
+help: Remove unused import: `sentencepiece`
+
+E402 Module level import not at top of file
+   --> examples\tensor_example.py:158:1
+    |
+156 | print("-" * 60)
+157 |
+158 | import json
+    | ^^^^^^^^^^^
+159 |
+160 | data = {
+    |
+
+E402 Module level import not at top of file
+   --> examples\tron_example.py:153:1
+    |
+151 | print("-" * 70)
+152 |
+153 | import json
+    | ^^^^^^^^^^^
+154 |
+155 | data = {
+    |
+
+F401 `transformers.AutoModelForCausalLM` imported but unused; consider using `importlib.util.find_spec` to test for availability
+  --> llm_evaluation\realworld_eval.py:73:30
+   |
+71 | try:
+72 |     import torch
+73 |     from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+   |                              ^^^^^^^^^^^^^^^^^^^^
+74 |
+75 |     HF_AVAILABLE = True
+   |
+help: Remove unused import
+
+F401 `transformers.AutoTokenizer` imported but unused; consider using `importlib.util.find_spec` to test for availability
+  --> llm_evaluation\realworld_eval.py:73:52
+   |
+71 | try:
+72 |     import torch
+73 |     from transformers import AutoModelForCausalLM, AutoTokenizer, pipeline
+   |                                                    ^^^^^^^^^^^^^
+74 |
+75 |     HF_AVAILABLE = True
+   |
+help: Remove unused import
+
+E722 Do not use bare `except`
+   --> llm_evaluation\realworld_eval.py:796:5
+    |
+794 |         encoding = tiktoken.get_encoding("cl100k_base")
+795 |         return len(encoding.encode(text))
+796 |     except:
+    |     ^^^^^^
+797 |         return len(text.split())
+    |
+
+F841 Local variable `numbers` is assigned to but never used
+  --> llm_evaluation\token_comparison.py:50:5
+   |
+48 |     words = len(re.findall(r"\b\w+\b", text))
+49 |     punctuation = len(re.findall(r"[^\w\s]", text))
+50 |     numbers = len(re.findall(r"\d+", text))
+   |     ^^^^^^^
+51 |     whitespace_blocks = len(re.findall(r"\s+", text))
+   |
+help: Remove assignment to unused variable `numbers`
+
+B007 Loop control variable `key` not used within loop body
+   --> llm_evaluation\token_comparison.py:268:9
+    |
+266 |     }
+267 |
+268 |     for key, sample in SAMPLE_DATASETS.items():
+    |         ^^^
+269 |         results = compare_formats(sample["data"], sample["name"])
+270 |         all_results.append(results)
+    |
+help: Rename unused `key` to `_key`
+
+E712 Avoid equality comparisons to `True`; use `decode_tron("1"):` for truth checks
+  --> tests\test_tron.py:98:16
+   |
+96 |     def test_decode_boolean(self):
+97 |         """Decode boolean 1/0."""
+98 |         assert decode_tron("1") == True
+   |                ^^^^^^^^^^^^^^^^^^^^^^^^
+99 |         assert decode_tron("0") == False
+   |
+help: Replace with `decode_tron("1")`
+
+E712 Avoid equality comparisons to `False`; use `not decode_tron("0"):` for false checks
+   --> tests\test_tron.py:99:16
+    |
+ 97 |         """Decode boolean 1/0."""
+ 98 |         assert decode_tron("1") == True
+ 99 |         assert decode_tron("0") == False
+    |                ^^^^^^^^^^^^^^^^^^^^^^^^^
+100 |
+101 |     def test_decode_null(self):
+    |
+help: Replace with `not decode_tron("0")`
+
+E711 Comparison to `None` should be `cond is None`
+   --> tests\test_tron.py:103:36
+    |
+101 |     def test_decode_null(self):
+102 |         """Decode null underscore."""
+103 |         assert decode_tron("_") == None
+    |                                    ^^^^
+    |
+help: Replace with `cond is None`
+
+F841 Local variable `decoded` is assigned to but never used
+   --> tests\test_tron.py:284:9
+    |
+282 |         data = {"code": "123"}
+283 |         encoded = encode_tron(data)
+284 |         decoded = decode_tron(encoded)
+    |         ^^^^^^^
+285 |         # Note: Without explicit quotes, "123" may decode as int
+286 |         # This is a known limitation of ultra-compact formats
+    |
+help: Remove assignment to unused variable `decoded`
+
+E731 Do not assign a `lambda` expression, use a `def`
+  --> toonstream\__init__.py:79:5
+   |
+77 |     TensorEncoder = None
+78 |     TensorDecoder = None
+79 |     is_torch_available = lambda: False
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+80 |
+81 | # TRON (Token Reduced Object Notation) support
+   |
+help: Rewrite `is_torch_available` as a `def`
+
+W293 Blank line contains whitespace
+   --> toonstream\decoder.py:406:1
+    |
+404 |         """
+405 |         Parse a CSV row with escape sequence support.
+406 |         
+    | ^^^^^^^^
+407 |         Escapes:
+408 |             \\, → ,
+    |
+help: Remove whitespace from blank line
+
+W293 Blank line contains whitespace
+   --> toonstream\decoder.py:412:1
+    |
+410 |             \\n → newline
+411 |             \\r → carriage return
+412 |             
+    | ^^^^^^^^^^^^
+413 |         Args:
+414 |             line: CSV row string
+    |
+help: Remove whitespace from blank line
+
+W293 Blank line contains whitespace
+   --> toonstream\decoder.py:415:1
+    |
+413 |         Args:
+414 |             line: CSV row string
+415 |             
+    | ^^^^^^^^^^^^
+416 |         Returns:
+417 |             List of unescaped values
+    |
+help: Remove whitespace from blank line
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+  --> toonstream\tron_decoder.py:73:13
+   |
+71 |             raise
+72 |         except Exception as e:
+73 |             raise ToonDecodeError(f"Failed to decode TRON: {e}")
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+74 |
+75 |     def _decode_primitive(self, s: str) -> Any:
+   |
+
+B904 Within an `except` clause, raise exceptions with `raise ... from err` or `raise ... from None` to distinguish them from errors in exception handling
+  --> toonstream\tron_encoder.py:85:13
+   |
+83 |             return self._encode_value(obj)
+84 |         except Exception as e:
+85 |             raise ToonEncodeError(f"Failed to encode to TRON: {e}")
+   |             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+86 |
+87 |     def _encode_value(self, obj: Any, prefix: str = "") -> str:
+   |
+
+E731 Do not assign a `lambda` expression, use a `def`
+  --> toonstream\unified_api.py:42:5
+   |
+40 |     encode_with_tensors = None
+41 |     decode_with_tensors = None
+42 |     is_torch_available = lambda: False
+   |     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+   |
+help: Rewrite `is_torch_available` as a `def`
+
+F822 Undefined name `convert` in `__all__`
+   --> toonstream\unified_api.py:142:12
+    |
+142 | __all__ = ["convert"]
+    |            ^^^^^^^^^
+    |
+
+Found 23 errors.
+No fixes available (12 hidden fixes can be enabled with the `--unsafe-fixes` option).

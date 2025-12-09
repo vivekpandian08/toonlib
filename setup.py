@@ -6,14 +6,14 @@ Installation:
     pip install .     # Regular install
 """
 
-from setuptools import setup, find_packages
+from setuptools import find_packages, setup
 
-with open("README.md", "r", encoding="utf-8") as fh:
+with open("README.md", encoding="utf-8") as fh:
     long_description = fh.read()
 
 setup(
     name="toonstream",
-    version="1.0.1",
+    version="2.0.0",
     author="Vivek Pandian",
     author_email="vivekpandian08@gmail.com",
     description="Token Oriented Object Notation - Efficient data serialization for LLMs",
@@ -49,7 +49,7 @@ setup(
     },
     entry_points={
         "console_scripts": [
-            # Add CLI tools here if needed
+            "toonstream=toonstream.cli:main",
         ],
     },
     keywords="toon json serialization tokens llm optimization csv tabular",

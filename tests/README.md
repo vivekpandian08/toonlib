@@ -9,12 +9,14 @@ Test suite for toonstream library.
 pytest tests/
 ```
 
+
 ### Run specific test file
 ```bash
 pytest tests/test_toonstream.py
-pytest tests/test_encoder.py
-pytest tests/test_decoder.py
-pytest tests/test_exceptions.py
+pytest tests/test_auto_mode_api.py
+pytest tests/test_both_modes.py
+pytest tests/test_tensor_utils.py
+pytest tests/test_tron.py
 ```
 
 ### Run with coverage
@@ -22,13 +24,14 @@ pytest tests/test_exceptions.py
 pytest tests/ --cov=toonstream --cov-report=html
 ```
 
+
 ## Test Files
 
-- `test_toonstream.py` - Comprehensive unit tests for toonstream
-- `test_encoder.py` - Tests for TOON encoding
-- `test_decoder.py` - Tests for TOON decoding
-- `test_exceptions.py` - Error handling tests
-- `test_integration.py` - End-to-end integration tests
+- `test_toonstream.py` - Comprehensive unit tests for TOON format
+- `test_auto_mode_api.py` - Tests for auto_mode parameter
+- `test_both_modes.py` - Tests for both normal and auto_mode
+- `test_tensor_utils.py` - PyTorch tensor support tests
+- `test_tron.py` - Comprehensive unit tests for TRON format
 
 ## Test Coverage
 
@@ -50,18 +53,21 @@ When adding new features:
 4. Ensure round-trip correctness
 5. Run full test suite before committing
 
+
 ## Test Results
 
 All tests should pass:
 ```
 ===== test session starts =====
-collected 45 items
+collected 186 items
 
-tests/test_toonstream.py ......... [ 26%]
-tests/test_encoder.py ............ [ 52%]
-tests/test_decoder.py ............ [ 70%]
-tests/test_exceptions.py ........ [ 85%]
-tests/test_integration.py ...... [100%]
+tests/test_auto_mode_api.py ...................
+tests/test_both_modes.py .........................................
+tests/test_tensor_utils.py ...................
+tests/test_toonstream.py ...............................................
+....
+tests/test_tron.py .....................................................
+...
 
-===== 45 passed in 0.5s =====
+===== 186 passed in X.XXs =====
 ```

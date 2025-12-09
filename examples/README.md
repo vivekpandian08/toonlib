@@ -1,52 +1,39 @@
 # Examples
 
-Tutorials and example code for using toonstream.
+Practical examples demonstrating ToonStream functionality.
 
 ## Files
 
-- `toonstream_tutorial.ipynb` - Interactive Jupyter notebook with comprehensive examples
+- `basic_example.py` - Simple encoding/decoding with various data types
+- `auto_mode_example.py` - Using the `auto_mode` parameter for automatic mode selection
+- `tensor_example.py` - PyTorch tensor serialization (requires PyTorch)
 
-## Tutorial Contents
+## Running Examples
 
-The notebook covers:
-
-1. **Installation** - Setting up toonstream
-2. **Basic Usage** - Simple encoding and decoding
-3. **Smart Optimization** - Automatic tabular format for arrays
-4. **Data Types** - All supported Python types
-5. **Real-world Examples** - Practical use cases
-6. **Performance** - Compression benchmarks
-7. **Best Practices** - When to use TOON
-
-## Running the Tutorial
-
-### Jupyter Notebook
 ```bash
-jupyter notebook examples/toonstream_tutorial.ipynb
+# Basic usage
+python examples/basic_example.py
+
+# Auto mode (intelligent tensor detection)
+python examples/auto_mode_example.py
+
+# Tensor support (requires PyTorch)
+python examples/tensor_example.py
 ```
 
-### VS Code
-1. Open `toonstream_tutorial.ipynb` in VS Code
-2. Select Python kernel
-3. Run cells interactively
+## Quick Example
 
-## Quick Examples
-
-### Basic Encoding
 ```python
 import toonstream
 
-data = {"name": "John", "age": 30}
+# Normal encoding
+data = {"name": "Alice", "scores": [95, 87, 92]}
 toon_str = toonstream.encode(data)
-```
+decoded = toonstream.decode(toon_str)
 
-### Smart Optimization
-```python
-employees = [
-    {"id": 1, "name": "Alice", "salary": 50000},
-    {"id": 2, "name": "Bob", "salary": 60000}
-]
-toon_str = toonstream.encode(employees, smart_optimize=True)
+# Auto mode (detects tensors automatically)
+encoded_auto = toonstream.encode(data, auto_mode=True)
+decoded_auto = toonstream.decode(encoded_auto, auto_mode=True)
 ```
 
 ### Decoding

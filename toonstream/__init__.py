@@ -13,7 +13,7 @@ Format Example:
         {"id": 2, "name": "Bob", "role": "user"}
       ]
     }
-    
+
     TOON:
     users[2]{id,name,role}:
     1,Alice,admin
@@ -29,11 +29,11 @@ Usage:
     Basic encoding (with smart optimization, recommended):
     >>> from toonstream import encode
     >>> toon_str = encode(data)
-    
+
     Legacy mode (always use tabular, no optimization):
     >>> from toonstream import encode
     >>> toon_str = encode(data, smart_optimize=False)
-    
+
     Decoding:
     >>> from toonstream import decode
     >>> data = decode(toon_str)
@@ -46,38 +46,73 @@ Modules:
 For more information, see README.md and OPTIMIZATION_GUIDE.md
 """
 
-from .encoder import ToonEncoder, encode
-from .decoder import ToonDecoder, decode
-from .exceptions import (
-    ToonError,
-    ToonEncodeError,
-    ToonDecodeError,
-    ToonValidationError
-)
+from .decoder import ToonDecoder
+from .decoder import decode as _normal_decode
+from .encoder import ToonEncoder
+from .encoder import encode as _normal_encode
+from .exceptions import ToonDecodeError, ToonEncodeError, ToonError, ToonValidationError
 from .pickle_utils import (
-    save_toon_pickle,
+    ToonPickleError,
+    load_pickle,
     load_toon_pickle,
     save_pickle,
-    load_pickle,
-    ToonPickleError
+    save_toon_pickle,
 )
 
-__version__ = "1.0.1"
+# Optional tensor support (requires PyTorch)
+try:
+    from .tensor_utils import (
+        TensorDecoder,
+        TensorEncoder,
+        decode_with_tensors,
+        encode_with_tensors,
+        is_torch_available,
+    )
+
+    _TENSOR_SUPPORT = True
+except ImportError:
+    _TENSOR_SUPPORT = False
+    encode_with_tensors = None
+    decode_with_tensors = None
+    TensorEncoder = None
+    TensorDecoder = None
+    is_torch_available = lambda: False
+
+# TRON (Token Reduced Object Notation) support
+from .tron_decoder import TronDecoder, decode_tron
+from .tron_encoder import TronEncoder, encode_tron
+
+# Unified API for mode selection and format choice
+try:
+    from .unified_api import decode, encode
+except ImportError:
+    encode = None
+    decode = None
+
+__version__ = "2.0.0"
 __all__ = [
     # Convenience functions (recommended API)
-    "encode",
-    "decode",
-    
+    "encode",  # Now supports format='toon'/'tron' and auto_mode parameters
+    "decode",  # Now supports format='toon'/'tron' and auto_mode parameters
+    # TRON format (ultra compact) - NEW in v2.0.0
+    "encode_tron",
+    "decode_tron",
+    "TronEncoder",
+    "TronDecoder",
     # Pickle utilities
     "save_toon_pickle",
     "load_toon_pickle",
     "save_pickle",
     "load_pickle",
-    
+    # Tensor utilities (optional)
+    "encode_with_tensors",
+    "decode_with_tensors",
+    "TensorEncoder",
+    "TensorDecoder",
+    "is_torch_available",
     # Classes for advanced usage
     "ToonEncoder",
     "ToonDecoder",
-    
     # Exceptions
     "ToonError",
     "ToonEncodeError",
